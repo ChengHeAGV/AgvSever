@@ -5,39 +5,27 @@ from bottle import run, get, post, request,template,route,static_file # or route
 import sqlite3
 import io,json
 import os,sys
+# config
+import configparser, os,sys
 
-# 当前路径
-global path 
-path= os.path.split(os.path.abspath(sys.argv[0]))[0] 
+# 根目录
+global root
+# 当前目录
+root = os.path.split(os.path.abspath(sys.argv[0]))[0] 
+# 上一级
+root = os.path.dirname(root)
 
 # 默认路径
 @route("/")  
 def index():  
-    return template(path+"/html/index.html")   
+    return template(root+"/web/html/index.html")   
 
 @route('/html/layui/<filename:path>')  
 def layui(filename):  
-    return static_file(filename, root=path+'/html/layui/')  
+    return static_file(filename, root=root+'/web/html/layui/')  
 
 # post参数请求
-# @post('/control')
-# def control_post():
-#     # 获取请求类型
-#     type = request.forms.get('type')
-#     if  type == 'set_target_pose':
-#         x = float(request.forms.get('x'))
-#         y = float(request.forms.get('y'))
-#         w = float(request.forms.get('w'))
-        
-#         # t = threading.Thread(target=set_target_pose,args=(x,y,w))
-#         # t.start()
-#         set_target_pose(x,y,w)
-
-# def set_target_pose(x,y,w):
-#     GoToPose(x,y,w)
-
-# post参数请求
-@post('/') # or @route('/login', method='POST')
+@post('/') 
 def data_post():
     # 获取请求类型
     type = request.forms.get('type')
@@ -70,7 +58,7 @@ def data_post():
 # 获取amcl_pose
 def get_amcl_pose():
     type = 'amcl_pose'
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找
     sql = "SELECT * from pose where type='%s'"%type
@@ -95,7 +83,7 @@ def get_amcl_pose():
 
 # 获取站点列表
 def get_station():
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找
     sql = "SELECT * from station"
@@ -123,7 +111,7 @@ def get_station():
 
 # 获取任务列表
 def get_task(limit):
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找,按订单降序
     sql = "SELECT * from task order by orders desc limit 0,%d"%limit
@@ -153,7 +141,7 @@ def get_task(limit):
 
 # 添加站点
 def add_station(name,x,y,z,w):
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找
     sql = "INSERT INTO station (name,x,y,z,w) VALUES ('{aa}', '{bb}', '{cc}','{dd}','{ee}')".format(aa=name,bb=x,cc=y,dd=z,ee=w)
@@ -165,7 +153,7 @@ def add_station(name,x,y,z,w):
 
 # 更改站点
 def change_station(id,name,x,y,z,w):
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找
     sql = "UPDATE station set name='{aa}',x='{bb}',y='{cc}',z='{dd}',w='{ee}' where id='{ff}'".format(aa=name,bb=x,cc=y,dd=z,ee=w,ff=id)
@@ -177,7 +165,7 @@ def change_station(id,name,x,y,z,w):
 
 # 删除站点
 def delete_station(id):
-    conn = sqlite3.connect(path+'/ros.db')
+    conn = sqlite3.connect(root+'/ros.db')
     c = conn.cursor()
     # 在数据库中查找
     sql = "DELETE FROM station where id='{aa}'".format(aa=id)
@@ -187,6 +175,10 @@ def delete_station(id):
     conn.close()
     return '{"resault":true}'
 
-# run(host='localhost', port=80, debug=True)
-run(host='192.168.1.125', port=80, debug=True)
-# run(host='192.168.47.128', port=8080, debug=True)
+if __name__ == '__main__':
+    # 读取配置
+    cp = configparser.ConfigParser()
+    cp.read(root +'/config.ini')
+    # 创建监听
+    run(host=cp.get('comm','host'), port=cp.get('server','port'), debug=bool(cp.get('comm','debug')))
+     
