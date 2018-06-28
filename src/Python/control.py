@@ -86,7 +86,7 @@ global pub
 if __name__ == '__main__':
     # 读取配置
     cp = configparser.ConfigParser()
-    str = '../'+path +'/config.ini' 
+    str = '../'+path +'/config.ini'
     cp.read('/home/zz/catkin_ws/src/base_controller/web/config.ini')
     print cp.get('control','host')
 
