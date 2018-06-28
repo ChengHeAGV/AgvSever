@@ -1,0 +1,595 @@
+ <!-- auth 孙毅明 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>AGV激光导航系统</title>
+  <link rel="stylesheet" href="html/layui/css/layui.css">
+</head>
+<style type="text/css">
+	.control_button {
+		margin-bottom: 30px;
+		margin-left: 10%;
+		margin-right: 10%;
+		width: 60%;
+		height: 50px;
+		font-size: 18px;
+	}
+</style>
+<body style="padding: 20px;">	
+	<!-- 机器人坐标，添加站点 -->
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend><h2>机器人坐标</h2></legend>
+    </fieldset>   
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+		    <!-- amcl_pose -->
+			<div class="layui-col-md3">
+                <div class="layui-card" style="height: 250px;">
+                    <div class="layui-card-header"><h1>amcl_pose</h1></div>
+                    <div class="layui-card-body" style="font-size: 18px" >
+						<div class="layui-row">
+							<div class="layui-col-xs1">
+								<label >X:</label>
+							</div>
+							<div class="layui-col-xs1">
+								<label id="amcl_pose-x">1.0</label>
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-xs1">
+								<label >Y:</label>
+							</div>
+							<div class="layui-col-xs1">
+								<label id="amcl_pose-y">1.0</label>
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-xs1">
+								<label >z:</label>
+							</div>
+							<div class="layui-col-xs1">
+								<label id="amcl_pose-z">1.0</label>
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-xs1">
+								<label >W:</label>
+							</div>
+							<div class="layui-col-xs1">
+								<label id="amcl_pose-w">1.0</label>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+			<!-- 设置 -->
+			<div class="layui-col-md3">
+                <div class="layui-card" style="height: 250px;">
+                    <div class="layui-card-header"><h1>设置</h1></div>
+                    <div class="layui-card-body" style="height: 100%;" >
+						<div class="layui-row" >
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+							<div class="layui-col-md7 layui-col-space15">
+								<button class="layui-btn" style="margin-top: 65%;margin-left: 55%;" id="btn-add" style="font-size: 18px">添加站点</button>
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+			<!-- 操作 -->
+			<div class="layui-col-md4">
+				<div class="layui-card" style="height: 250px;">
+					<div class="layui-card-header"><h1>操作</h1></div>
+					<div class="layui-card-body">
+						<div class="layui-row" >
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<button class="layui-btn control_button" id="btn_control_go">前进</button>								
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md4 layui-col-space15">
+								<button class="layui-btn control_button" id="btn_control_left">左转</button>	
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<button class="layui-btn control_button" id="btn_control_stop">停止</button>	
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<button class="layui-btn control_button" id="btn_control_right">右转</button>	
+							</div>
+						</div>
+						<div class="layui-row">
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<button class="layui-btn control_button" id="btn_control_back">后退</button>	
+							</div>
+							<div class="layui-col-md4 layui-col-space15">
+								<p>&nbsp</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>        
+	</div>
+	
+    <!-- 坐标集合 -->
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend><h2>数据列表</h2></legend>
+	</fieldset>  
+	<div class="layui-collapse" lay-accordion="">
+		<div class="layui-colla-item" >
+			<h1 class="layui-colla-title">站点列表</h1>
+			<div class="layui-colla-content  layui-show">
+				<div class="layui-form">
+					<table class="layui-table">
+						<!-- <colgroup>
+						<col width="150">
+						<col width="150">
+						<col width="200">
+						<col>
+						</colgroup> -->
+						<thead>
+						<tr>
+							<th>序号</th>
+							<th>站点名称</th>
+							<th>x</th>
+							<th>y</th>
+							<th>z</th>
+							<th>w</th>
+							<th>操作</th>
+						</tr> 
+						</thead>
+						<tbody id="station_table_list">
+						<!-- 动态生成 -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="layui-colla-item">
+			<h2 class="layui-colla-title">任务列表</h2>
+			<div class="layui-colla-content">
+				<div class="layui-form">
+					<table class="layui-table">
+						<!-- <colgroup>
+						<col width="150">
+						<col width="150">
+						<col width="200">
+						<col>
+						</colgroup> -->
+						<thead>
+						<tr>
+							<th>序号</th>
+							<th>订单号</th>
+							<th>站点名称</th>
+							<th>开始时间</th>
+							<th>结束时间</th>
+							<th>状态</th>
+							<th>执行结果</th>
+						</tr> 
+						</thead>
+						<tbody id="task_table_list">
+						<!-- 动态生成 -->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script src="html/layui/layui.js"></script>
+<script>
+//一般直接写在一个js文件中
+layui.use(['layer', 'element','laytpl','form'], function(){
+    var layer = layui.layer
+    ,form = layui.form
+    ,element = layui.element
+    ,laytpl = layui.laytpl
+    ,$ = jQuery = layui.$;
+	///////////////////////////////////////////////////////////
+
+    // 加载站点列表
+	StationList();
+
+    // 定时更新机器人坐标
+    setInterval(function paypal_ajax_return(){
+        $.ajax({
+            type:'POST',
+            url: "/",
+            async: true,
+            data:{type:'get_amcl_pose'},
+            success: function (res) {
+            // console.log('pose[amcl_pose]:',res);
+            var rs=jQuery.parseJSON(res);
+                $("#amcl_pose-x").text(rs.x);
+                $("#amcl_pose-y").text(rs.y);
+				$("#amcl_pose-z").text(rs.z);
+                $("#amcl_pose-w").text(rs.w);
+            }
+        });
+    }, 1000); //定时执行一次YourFunction函数。
+
+	// 定时更新任务列表
+	setInterval(function paypal_ajax_return(){
+		TaskList();
+	},1000)
+
+	// 添加站点
+    $("#btn-add").click(function(){
+		// 添加当前坐标到站点
+		layer.open({
+		title: '添加站点'
+		,content:	'<div class="layui-form-item">'+
+					'<label class="layui-form-label">站点名称:</label>'+
+						'<div class="layui-input-block">'+
+							'<input id="add-station-name" placeholder="请输入站点名称" class="layui-input">'+
+						'</div>'+
+					'</div>'+
+					'<div class="layui-form-item">'+
+						'<label class="layui-form-label">X:</label>'+
+						'<div class="layui-input-block">'+
+							'<input id="add-station-x" disabled="disabled" value="'+ $("#amcl_pose-x").text() +'" class="layui-input">'+
+						'</div>'+
+					'</div>'+
+					'<div class="layui-form-item">'+
+						'<label class="layui-form-label">Y:</label>'+
+						'<div class="layui-input-block">'+
+							'<input id="add-station-y" disabled="disabled" value="'+ $("#amcl_pose-y").text() +'" class="layui-input">'+
+						'</div>'+
+					'</div>'+
+					'<div class="layui-form-item">'+
+						'<label class="layui-form-label">Z:</label>'+
+						'<div class="layui-input-block">'+
+							'<input id="add-station-z" disabled="disabled" value="'+ $("#amcl_pose-z").text() +'" class="layui-input">'+
+						'</div>'+
+					'</div>'+
+					'<div class="layui-form-item">'+
+						'<label class="layui-form-label">W:</label>'+
+						'<div class="layui-input-block">'+
+							'<input id="add-station-w" disabled="disabled" value="'+ $("#amcl_pose-w").text() +'" class="layui-input">'+
+						'</div>'+
+					'</div>'
+		,yes: function(index, layero){
+			if($("#add-station-name").val().length==0){
+				// 提示用户站点名称不能为空
+				layer.alert('站点名称不能为空', {icon: 5,anim:0,shade:0.3},function(){
+					$("#btn-add").click();
+				});
+			}
+			else{
+				// 向服务器提交站点信息
+				$.ajax({
+					type:'POST',
+					url: "/",
+					async: true,//异步
+					data:{type:'add_station',name:$("#add-station-name").val(),x:$("#add-station-x").val(),y:$("#add-station-y").val(),z:$("#add-station-z").val(),w:$("#add-station-w").val()},
+					success: function (res) {
+						console.log('提交站点结果:',res);
+						try {
+							var rs = jQuery.parseJSON(res);
+							console.log(rs.resault);
+							if(rs.resault==true){
+								// 提交成功,更新站点列表
+								layer.alert('添加成功！', {icon: 1,anim:1,shade:0.3},function(index){
+									StationList();
+									layer.close(index);
+								});
+							}
+							else if(rs.resault==false){
+								// 提交失败
+								layer.alert('添加失败：'+rs.err, {icon: 5,anim:0,shade:0.3});
+							}
+						} catch (error) {
+							// 返回格式异常
+							layer.alert('服务器返回异常,请联系管理员！', {icon: 5,anim:0,shade:0.3});
+						}
+					}
+				});
+			}
+		}
+
+		}); 
+        // 重新加载站点列表
+		StationList();
+    });
+
+	// 控制按钮点击
+    $("[id^=btn_control_]").click(function(){
+		// 获取当前元素id
+		var str = $(this).attr('id');
+		// 分割出id
+		var buf = str.split('_');
+		var cmd = buf[2];
+		// console.log(cmd)
+		// 向服务器方式控制指令
+		$.ajax({
+			type:'POST',
+			url: "http://192.168.1.125:9092",
+			async: true,//异步
+			data:{type:'control',cmd:cmd,speed:'0.05',turn:'0.5'},
+			success: function (res) {
+				console.log(res)
+			}
+		});
+	})
+
+	// 监听站点列表点击事件
+	function listen_station_click() {
+		// 更改站点
+		$("[id^=btn_change_station]").click(function(){
+			// btn_change_station_id_index   id:数据库中的序号；index:页面上的序号；
+			// 获取当前元素id
+			var str = $(this).attr('id');
+			// console.log('Clicked id:',str);
+			var id,index;
+			// 分割出id和index
+			var buf = str.split('_');
+			id = buf[3];
+			index = buf[4];
+			// console.log(id,index);
+			// 从页面获取当前站点信息
+			var name,x,y,w;
+			name = $("#station_"+index).children('td:eq(1)').text();
+			x = $("#station_"+index).children('td:eq(2)').text();
+			y = $("#station_"+index).children('td:eq(3)').text();
+			z = $("#station_"+index).children('td:eq(4)').text();
+			w = $("#station_"+index).children('td:eq(5)').text();
+			// 弹窗展示
+			layer.open({
+			title: '更改站点'
+			,content:	'<div class="layui-form-item">'+
+						'<label class="layui-form-label">站点名称:</label>'+
+							'<div class="layui-input-block">'+
+								'<input id="change-station-name" placeholder="请输入站点名称" value="'+ name +'" class="layui-input">'+
+							'</div>'+
+						'</div>'+
+						'<div class="layui-form-item">'+
+							'<label class="layui-form-label">X:</label>'+
+							'<div class="layui-input-block">'+
+								'<input id="change-station-x" value="'+ x +'" class="layui-input">'+
+							'</div>'+
+						'</div>'+
+						'<div class="layui-form-item">'+
+							'<label class="layui-form-label">Y:</label>'+
+							'<div class="layui-input-block">'+
+								'<input id="change-station-y" value="'+ y +'" class="layui-input">'+
+							'</div>'+
+						'</div>'+
+						'<div class="layui-form-item">'+
+							'<label class="layui-form-label">Z:</label>'+
+							'<div class="layui-input-block">'+
+								'<input id="change-station-z" value="'+ z +'" class="layui-input">'+
+							'</div>'+
+						'</div>'+
+						'<div class="layui-form-item">'+
+							'<label class="layui-form-label">W:</label>'+
+							'<div class="layui-input-block">'+
+								'<input id="change-station-w" value="'+ w +'" class="layui-input">'+
+							'</div>'+
+						'</div>'
+			,btn: ['取消','提交']
+			,btn1:function (index) {
+				layer.close(index);
+			}
+			,btn2:function(index, layero){
+				if($("#change-station-name").val().length==0){
+					// 提示用户站点名称不能为空
+					layer.alert('站点名称不能为空', {icon: 5,anim:0,shade:0.3},function() {
+						$("#"+str).click();
+					});
+				}
+				else{
+					if($("#change-station-name").val()==name)
+						if($("#change-station-x").val()==x)
+							if($("#change-station-y").val()==y)
+								if($("#change-station-w").val()==w){layer.alert('逗我玩呢，啥都没变啊！', {icon: 5,anim:0,shade:0.3});
+									return;
+								}
+					// 向服务器提交站点信息
+					$.ajax({
+						type:'POST',
+						url: "/",
+						async: true,//异步
+						data:{type:'change_station',id:id,name:$("#change-station-name").val(),x:$("#change-station-x").val(),y:$("#change-station-y").val(),w:$("#change-station-w").val()},
+						success: function (res) {
+							console.log('提交站点结果:',res);
+							try {
+								rs = jQuery.parseJSON(res);
+								console.log(rs.resault);
+								if(rs.resault==true){
+									// 提交成功,更新站点列表
+									layer.alert('更改成功！', {icon: 1,anim:0,shade:0.3},function(index){
+										StationList();
+										layer.close(index);
+									});
+								}
+								else if(rs.resault==false){
+									// 提交失败
+									layer.alert('更改失败：'+rs.err, {icon: 5,anim:0,shade:0.3});
+								}
+							} catch (error) {
+								// 返回格式异常
+								layer.alert('服务器返回异常,请联系管理员！', {icon: 5,anim:0,shade:0.3});
+							}
+						}
+					});
+				}
+			}
+			}); 
+		})
+
+		// 删除站点
+		$("[id^=btn_delete_station]").click(function(){
+			// btn_change_station_id_index   id:数据库中的序号；index:页面上的序号；
+			// 获取当前元素id
+			var str = $(this).attr('id');
+			// console.log('Clicked id:',str);
+			layer.confirm('确定要删除吗？', {icon: 3,anim:0,shade:0.3,
+			btn: ['取消','确定'],
+			btn1:function(index){
+				layer.close(index);
+			},
+			btn2:function(index){
+				var id,index;
+				// 分割出id和index
+				var buf = str.split('_');
+				id = buf[3];
+				index = buf[4];
+				// console.log(id,index);
+				// 提交服务器
+				$.ajax({
+					type:'POST',
+					url: "/",
+					async: false,//异步
+					data:{type:'delete_station',id:id},
+					success: function (res) {
+						try {
+							rs = jQuery.parseJSON(res);
+							console.log(rs.resault);
+							if(rs.resault==true){
+								// 提交成功,更新站点列表
+								layer.alert('删除成功！', {icon: 1,anim:0,shade:0.3},function(index){
+									StationList();
+									layer.close(index);
+								});
+							}
+							else if(rs.resault==false){
+								// 提交失败
+								layer.alert('删除失败：'+rs.err, {icon: 5,anim:0,shade:0.3});
+							}
+						} catch (error) {
+							// 返回格式异常
+							layer.alert('服务器返回异常,请联系管理员！', {icon: 5,anim:0,shade:0.3});
+						}
+					}
+				});
+			}
+			});
+		})		
+	
+		// 执行站点
+		$("[id^=btn_exec_station_]").click(function() {
+			// btn_change_station_id_index   id:数据库中的序号；index:页面上的序号；
+			// 获取当前元素id
+			var str = $(this).attr('id');
+			// console.log('Clicked id:',str);
+			var id,index;
+			// 分割出id和index
+			var buf = str.split('_');
+			id = buf[3];
+			index = buf[4];
+			// console.log(id,index);
+			// 从页面获取当前站点信息
+			var name,x,y,z,w;
+			console.log($("#station_"+index).children().text());
+			name = $("#station_"+index).children('td:eq(1)').text();
+			x = $("#station_"+index).children('td:eq(2)').text();
+			y = $("#station_"+index).children('td:eq(3)').text();
+			z = $("#station_"+index).children('td:eq(4)').text();
+			w = $("#station_"+index).children('td:eq(5)').text();
+			var order = $.now();
+			console.log('test')
+			$.ajax({
+				type:'POST',
+				url: "http://192.168.1.125:9091/goto",
+				async: false,//异步
+				data:{type:'goto_pose',x:x,y:y,z:z,w:w,order:order,station:name},
+				success: function (res) {
+					console.log(res)
+				}
+			});
+		})
+	}
+	
+	//////////////////////////////////////////////////////////
+	function StationList(){
+		// 加载站点列表
+		$.ajax({
+			type:'POST',
+			url: "/",
+			async: true,//异步
+			data:{type:'get_station'},
+			success: function (res) {
+				// console.log('station-list:',res);
+				var rs = jQuery.parseJSON(res);
+				console.log(res)
+				var text;
+				if(res!=""){
+					// 更新站点列表
+					for(i=0;i<rs.length;i++)
+					{
+						text +='<tr id="station_'+ i +'">'+
+								'<td>'+ i +'</td>'+
+								'<td>'+ rs[i].name +'</td>'+
+								'<td>'+ rs[i].x +'</td>'+
+								'<td>'+ rs[i].y +'</td>'+
+								'<td>'+ rs[i].z +'</td>'+
+								'<td>'+ rs[i].w +'</td>'+
+								'<td>'+
+								// btn_change_station_id_index
+								'<button class="layui-btn  layui-btn-normal layui-btn-xs" id="btn_exec_station_'+ rs[i].id +'_'+ i +'" >执行</button>'+
+								'<button class="layui-btn layui-btn-warm layui-btn-xs" id="btn_change_station_'+ rs[i].id +'_'+ i +'" >更改</button>'+
+								'<button class="layui-btn layui-btn-danger layui-btn-xs" id="btn_delete_station_'+ rs[i].id +'_'+ i +'" >删除</button>'+
+								'</td>'+
+								'</tr>';
+					}
+					$("#station_table_list").html(text); 
+					// 监听
+					listen_station_click();
+				}	
+				else{
+					$("#station_table_list").html(''); 
+				}
+			}
+		});
+	}
+	
+	function TaskList(){
+		// 加载站点列表
+		$.ajax({
+			type:'POST',
+			url: "/",
+			async: true,//异步
+			data:{type:'get_task',limit:10},
+			success: function (res) {
+				// console.log('station-list:',res);
+				var rs = jQuery.parseJSON(res);
+				var text;
+				// 更新站点列表
+				for(i=0;i<rs.length;i++)
+				{
+					text +='<tr id="station_'+ i +'">'+
+							'<td>'+ i +'</td>'+
+							'<td>'+ rs[i].orders +'</td>'+
+							'<td>'+ rs[i].station +'</td>'+
+							'<td>'+ rs[i].starts +'</td>'+
+							'<td>'+ rs[i].stops +'</td>'+
+							'<td>'+ rs[i].states +'</td>'+
+							'<td>'+ rs[i].result +'</td>'+
+							'</tr>';
+				}
+				// console.log('text:',text);
+				$("#task_table_list").html(text); 
+			}
+		});
+	}
+
+});
+</script> 
+</body>
+</html>
+
