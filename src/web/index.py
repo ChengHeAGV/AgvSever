@@ -29,6 +29,7 @@ def layui(filename):
 def data_post():
     # 获取请求类型
     type = request.forms.get('type')
+    print type
     if  type == 'get_amcl_pose':
         return get_amcl_pose()
     elif type == 'get_station':

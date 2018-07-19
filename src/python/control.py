@@ -77,4 +77,4 @@ if __name__ == '__main__':
     rospy.sleep(1)
     print '1234'
     # 创建监听
-    run(host=cp.get('comm','host'), port=cp.get('control','port'), debug=bool(cp.get('comm','debug')))
+    # run(host=cp.get('comm','host'), port=cp.get('control','port'), debug=bool(cp.get('comm','debug')))

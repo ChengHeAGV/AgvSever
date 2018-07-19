@@ -1,0 +1,47 @@
+<launch>
+
+  <node pkg="base_controller" type="base_controller" name="base_controller"  />
+
+  <!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" output="screen" /> -->
+  
+  <!-- <node pkg="base_controller" type="listen.py" name="listen"/> -->
+
+  <include file="$(find base_controller)/launch/agv_gmapping_demo.launch"/>
+
+  <arg name="model" />
+  <arg name="gui" default="False" />
+  <param name="smartcar_description" textfile="$(find smartcar_description)/urdf/smartcar.urdf" />
+  <param name="use_gui" value="$(arg gui)"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+
+  <!-- IMU和里程计融合 -->
+  <include file="$(find robot_pose_ekf)/robot_pose_ekf.launch"/>
+  
+  <node pkg="rviz" type="rviz" name="rviz"/>
+
+  <!-- 监听机器人坐标 -->
+  <!-- <node pkg="agvsever" type="listen.amcl_pose.py" name="listen.amcl_pose" /> -->
+  <!-- 发布机器人位置 -->
+  <!-- <node pkg="agvsever" type="goto.py" name="goto" />  -->
+  <!-- 控制机器人行走 -->
+  <!-- <node pkg="agvsever" type="control.py" name="control"/> -->
+
+<!--   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find urdf_tutorial)/urdf.rviz" />
+ -->
+
+
+
+
+  <!-- <include file="$(find base_controller)/launch/move_base.launch"/>  -->
+
+  <!-- <include file="$(find lslidar_n301_decoder)/launch/lslidar_n301.launch" /> -->
+<!-- 
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_base_link" args="0 0 0 0 0 0 odom base_link 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.045 0.0 0.0 0 0 0.0 base_link lslidar 100"/>
+	 -->
+  
+  <!-- <include file="$(find base_controller)/launch/move_base.launch"/> -->
+</launch>
